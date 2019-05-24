@@ -2,5 +2,6 @@
 
 pkg_update: true
 hosting_infrastructure: openstack
+force_host_reboot: false
 
 unique_idm_name: labs1

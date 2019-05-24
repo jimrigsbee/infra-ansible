@@ -18,12 +18,16 @@
     type: A
     value: "{{ ec2instance.private_ip_address }}"
     ttl: 300
-    zone: "{{ vpc_name + '.' + dns_domain }}."
+    zone: "{{ unique_idm_name + '.' + dns_domain }}."
   when: ec2instance is defined
+
+- name: Breakout instance IP address
+  set_fact:
+    reverse_ips: "{{ ec2instance.private_ip_address.split('.') }}"
+  when: aws_instance.reverse_lookup and ec2instance is defined
 
 - name: Determine reverse lookup zone
   set_fact:
-    reverse_ips: "{{ ec2instance.private_ip_address.split('.') }}"
     reverse_zone: "{{ reverse_ips[-2] + '.' + reverse_ips[-3] + '.' + reverse_ips[-4] }}.in-addr.arpa."
   when: aws_instance.reverse_lookup and ec2instance is defined
 
