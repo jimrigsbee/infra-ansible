@@ -9,7 +9,7 @@
 - name: Wait for instance to be ready
   wait_for:
     port: 22
-    host: "{{ aws_instance.hostname_prefix }}.{{ vpc_name }}.{{ dns_domain }}"
+    host: "{{ aws_instance.hostname_prefix }}.{{ unique_idm_name }}.{{ dns_domain }}"
     delay: 20
     timeout: 60
   connection: local

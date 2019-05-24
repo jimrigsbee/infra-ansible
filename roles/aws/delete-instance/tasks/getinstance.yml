@@ -2,7 +2,7 @@
 - name: Get instance facts
   ec2_instance_facts:
     filters:
-      "tag:Name": "{{ aws_instance.hostname_prefix }}.{{ vpc_name }}.{{ dns_domain }}"
+      "tag:Name": "{{ aws_instance.hostname_prefix }}.{{ unique_idm_name }}.{{ dns_domain }}"
     region: "{{ aws_region }}"
   register: instances
   failed_when: instances|length == 0

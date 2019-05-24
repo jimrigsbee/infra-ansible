@@ -9,6 +9,8 @@
 - name: Gather Subnet facts
   ec2_vpc_subnet_facts:
     filters:
-      tag:Name: "{{ vpc_name }}"
+      vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
+      availability-zone: "{{ aws_instance.zone }}"
+      cidr-block: "{{ aws_instance.cidr_block }}"      
     region: "{{ aws_region }}"
   register: sub

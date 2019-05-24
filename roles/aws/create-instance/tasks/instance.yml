@@ -3,13 +3,13 @@
   ec2:
     assign_public_ip: "{{ aws_instance.assign_public_ip }}"
     count_tag:
-      Name: "{{ aws_instance.hostname_prefix }}.{{ vpc_name }}.{{ dns_domain }}"
+      Name: "{{ aws_instance.hostname_prefix }}.{{ unique_idm_name }}.{{ dns_domain }}"
     exact_count: 1
     groups: "{{ aws_instance.security_groups }}"
     instance_type: "{{ aws_instance.instance_type }}"
     image: "{{ aws_instance.ami_id }}"
     instance_tags:
-      Name: "{{ aws_instance.hostname_prefix }}.{{ vpc_name }}.{{ dns_domain }}"
+      Name: "{{ aws_instance.hostname_prefix }}.{{ unique_idm_name }}.{{ dns_domain }}"
     key_name: "{{ aws_key_name }}"
     monitoring: no
     region: "{{ aws_region }}"

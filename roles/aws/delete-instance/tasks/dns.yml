@@ -3,7 +3,7 @@
   route53:
     state: absent
     private_zone: no
-    record: "{{ aws_instance.hostname_prefix }}.{{ vpc_name }}.{{ dns_domain }}"
+    record: "{{ aws_instance.hostname_prefix }}.{{ unique_idm_name }}.{{ dns_domain }}"
     type: A
     value: "{{ ec2instance.public_ip_address }}"
     ttl: 300
@@ -14,23 +14,29 @@
   route53:
     state: absent
     private_zone: yes
-    record: "{{ aws_instance.hostname_prefix }}.{{ vpc_name }}.{{ dns_domain }}"
+    record: "{{ aws_instance.hostname_prefix }}.{{ unique_idm_name }}.{{ dns_domain }}"
     type: A
     value: "{{ ec2instance.private_ip_address }}"
     ttl: 300
     zone: "{{ vpc_name + '.' + dns_domain }}."
   when: ec2instance is defined
 
+- name: Determine reverse lookup zone
+  set_fact:
+    reverse_ips: "{{ ec2instance.private_ip_address.split('.') }}"
+    reverse_zone: "{{ reverse_ips[-2] + '.' + reverse_ips[-3] + '.' + reverse_ips[-4] }}.in-addr.arpa."
+  when: aws_instance.reverse_lookup and ec2instance is defined
+
 - name: Delete Reverse Lookup Entry
   route53:
     state: absent
     private_zone: yes
-    record: "{{  ec2instance.private_ip_address.split('.')[-1] + '.' + aws_instance.reverse_zone }}"
+    record: "{{  reverse_ips[-1] + '.' + reverse_zone }}"
     type: PTR
-    value: "{{ aws_instance.hostname_prefix }}.{{ vpc_name }}.{{ dns_domain }}"
+    value: "{{ aws_instance.hostname_prefix }}.{{ unique_idm_name }}.{{ dns_domain }}"
     ttl: 300
     vpc_id: "{{ vpc.vpcs[0].vpc_id }}"
-    zone: "{{ aws_instance.reverse_zone }}"
+    zone: "{{ reverse_zone }}"
   when: aws_instance.reverse_lookup and ec2instance is defined
 
 - name: Delete Reverse Lookup Zone
@@ -38,5 +44,5 @@
     state: absent
     vpc_id: "{{ vpc.vpcs[0].vpc_id }}"
     vpc_region: "{{ aws_region }}"
-    zone: "{{ aws_instance.reverse_zone }}"
+    zone: "{{ reverse_zone }}"
   when: aws_instance.reverse_lookup
